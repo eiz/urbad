@@ -1,0 +1,573 @@
+# V29, No Major Glitches
+# Item pools
+# Only the items defined in the default V29 configuration are specified here.
+# Non-progressive items, easy mode items, triforce pieces etc aren't supported.
+# Keysanity also isn't supported.
+
+## Advancement items
+
+item sword[4];
+item bottle[4];
+item bombos;
+item book;
+item bow;
+item red_cane;
+item cape;
+item ether;
+item fire_rod;
+item flippers;
+item hammer;
+item hookshot;
+item ice_rod;
+item lamp;
+item mirror;
+item pearl;
+item mushroom;
+item ocarina;
+item boots;
+item powder;
+item quake;
+item shovel;
+item silver_arrows;
+item gloves[2];
+item net;
+item shield[3];
+item blue_cane;
+item ten_bombs;
+item half_magic;
+
+## Nice items
+
+item heart_container;
+item boss_heart_container[10];
+item armor[2];
+item boomerang;
+item red_boomerang;
+
+## Misc items
+
+item heart_piece[24];
+item bomb_upgrade_5[6];
+item bomb_upgrade_10;
+item arrow_upgrade_5[6];
+item arrow_upgrade_10;
+item arrow;
+item ten_arrows[5];
+item three_bombs[9];
+item one_rupee[2];
+item five_rupees[4];
+item twenty_rupees[28];
+item fifty_rupees[7];
+item one_hundred_rupees;
+item three_hundred_rupees[5];
+
+## Token items
+item aga2;
+
+# Flags
+# Only the ones I find interesting were included. Feel free.
+
+flag open false;
+flag require_lamp true;
+flag allow_fake_flippers false;
+
+# Basic character capabilities.
+
+CanLiftRocks := has(gloves);
+CanLiftDarkRocks := has(gloves, 2);
+CanLightTorches := has(fire_rod) || has(lamp);
+CanMeltThings := has(fire_rod) || has(bombos);
+CanFly := has(ocarina);
+CanShootSilverArrows := has(bow) && has(silver_arrows);
+CanShootArrows := has(bow);
+CanBlockLasers := has(shield, 3);
+CanExtendMagic2 := has(half_magic) || has(bottle);
+CanExtendMagic3 := has(half_magic) && has(bottle) || has(bottle, 2);
+CanExtendMagic4 := has(half_magic) && has(bottle) || has(bottle, 3);
+CanKill5Things := has(sword) ||
+    has(red_cane) ||
+    has(ten_bombs) ||
+    CanShootArrows ||
+    has(hammer) ||
+    has(fire_rod);
+CanKill8Things := CanKill5Things || has(red_cane) && CanExtendMagic2;
+LampIfNeeded := flag(require_lamp) => has(lamp);
+HasMasterSword := has(sword, 2);
+HasRedCrystals := has(crystal_5) && has(crystal_6);
+HasAllCrystals :=
+    has(crystal_1) && has(crystal_2) && has(crystal_3) &&
+    has(crystal_4) && has(crystal_5) && has(crystal_6) && has(crystal_7);
+TravelWithBigBombToPyramid := has(hammer) || has(aga1) && has(mirror);
+TravelDarkWorldNEToS :=
+    has(hammer) || has(hookshot) && (has(flippers) || CanLiftRocks);
+TravelDarkWorldNEToNW :=
+    has(hookshot) && (has(flippers) || CanLiftRocks || has(hammer));
+
+# Light World
+
+region light_world_nw {
+    constraint has(escape);
+
+    location pedestal := has(pendant_1) && has(pendant_2) && has(pendant_3);
+    location kings_tomb := has(boots) && CanLiftDarkRocks ||
+        has(mirror) && has(pearl) && reachable(nw_dark_world);
+    location tavern := true;
+    location chicken_house := true;
+    location well_top := true;
+    location well_left := true;
+    location well_middle := true;
+    location well_right := true;
+    location well_bottom := true;
+    location blind_hideout_top := true;
+    location blind_hideout_left := true;
+    location blind_hideout_right := true;
+    location blind_hideout_far_left := true;
+    location blind_hideout_far_right := true;
+    location bonk_rocks := has(boots);
+    location bottle_merchant := true;
+    location bat := has(powder) &&
+        (has(hammer) || has(pearl) && has(mirror) && CanLiftDarkRocks);
+    location sick_kid := has(bottle);
+    location woods_hideout := true;
+    location lumberjack := has(aga1) && has(boots);
+    location graveyard_ledge :=
+        has(pearl) && has(mirror) && reachable(nw_dark_world);
+    location mushroom := true;
+}
+
+region light_world_ne {
+    constraint has(escape);
+
+    location potion_shop := has(mushroom);
+    location sahasrala_hut_left := true;
+    location sahasrala_hut_middle := true;
+    location sahasrala_hut_right := true;
+    location sahasrala := has(pendant_1);
+    location waterfall_left := has(flippers);
+    location waterfall_right := has(flippers);
+    location zora := CanLiftRocks || has(flippers);
+    location zora_ledge := has(flippers);
+}
+
+region light_world_south {
+    constraint has(escape);
+
+    location floodgate := true;
+    location links_house := true;
+    location aginah := true;
+    location mini_moldorm_far_left := true;
+    location mini_moldorm_left := true;
+    location mini_moldorm_right := true;
+    location mini_moldorm_far_right := true;
+    location mini_moldorm_cave_npc := true;
+    location ice_rod_cave := true;
+    location hobo := has(flippers);
+    location bombos_tablet :=
+        has(book) && HasMasterSword && has(mirror) && reachable(dark_world_s);
+    location cave_45 := has(mirror) && reachable(dark_world_s);
+    location checkerboard_cave := reachable(dark_world_mire) && has(mirror);
+    location library := has(boots);
+    location maze_race := true;
+    location desert_ledge := reachable(desert_palace);
+    location lake_hylia_island :=
+        has(flippers) && has(pearl) && has(mirror) &&
+        (reachable(dark_world_ne) || reachable(dark_world_s));
+    location sunken_treasure := true;
+    location flute_spot := has(shovel);
+}
+
+region light_world_dm_w {
+    constraint has(escape) && (CanFly || CanLiftRocks && LampIfNeeded);
+
+    location old_man := LampIfNeeded;
+    location ether_tablet := has(book) && HasMasterSword &&
+        (has(mirror) || has(hookshot) && has(hammer));
+    location spectacle_rock := has(mirror);
+    location spectacle_rock_cave := true;
+}
+
+region light_world_dm_e {
+    constraint has(escape) && reachable(light_world_dm_w) &&
+        (has(mirror) && has(hammer) || has(hookshot));
+
+    location spiral_cave := true;
+    location mimic_cave :=
+        has(mirror) && has(key_d7, 2) && reachable(turtle_rock);
+    location paradox_lower_far_left := true;
+    location paradox_lower_left := true;
+    location paradox_lower_middle := true;
+    location paradox_lower_right := true;
+    location paradox_lower_far_right := true;
+    location paradox_upper_left := true;
+    location paradox_upper_right := true;
+    location floating_island := has(mirror) && has(pearl) && CanLiftDarkRocks;
+}
+
+# Dark World
+
+region dark_world_ne {
+    constraint has(escape);
+    constraint has(aga1) ||
+         has(hammer) && CanLiftRocks && has(pearl) ||
+         CanLiftDarkRocks && has(pearl);
+
+    location catfish := has(pearl) && CanLiftRocks;
+    location pyramid := true;
+    location pyramid_fairy_left :=
+        has(pearl) && reachable(dark_world_s) &&
+        HasRedCrystals && TravelWithBigBombToPyramid;
+    location pyramid_fairy_right := reachable(pyramid_fairy_left);
+    location ganon :=
+        HasAllCrystals && has(aga2) && has(pearl) &&
+        HasMasterSword && (has(lamp) || has(fire_rod) && CanExtendMagic3);
+}
+
+region dark_world_s {
+    constraint has(escape) && has(pearl);
+    constraint
+        (reachable(dark_world_ne) && TravelDarkWorldNEToS) ||
+        has(hammer) && CanLiftRocks ||
+        CanLiftDarkRocks;
+
+    location hype_cave_top := true;
+    location hype_cave_middle_right := true;
+    location hype_cave_middle_left := true;
+    location hype_cave_bottom := true;
+    location hype_cave_npc := true;
+    location stumpy := true;
+    location digging_game := true;
+}
+
+region dark_world_nw {
+    constraint has(escape) && has(pearl);
+    constraint reachable(dark_world_ne) && TravelDarkWorldNEToNW ||
+        has(hammer) && CanLiftRocks || CanLiftDarkRocks;
+
+    location brewery := true;
+    location c_shaped_house := true;
+    location chest_game := true;
+    location hammer_pegs := CanLiftDarkRocks && has(hammer);
+    location bumper_cave := CanLiftRocks && has(cape);
+    location blacksmith := CanLiftDarkRocks;
+    location purple_chest := CanLiftDarkRocks;
+}
+
+region dark_world_mire {
+    constraint has(escape) && CanFly && CanLiftDarkRocks;
+
+    location mire_shed_left := has(pearl);
+    location mire_shed_right := has(pearl);
+}
+
+region dark_world_dm_w {
+    # This is slightly different than the VT definition. For w/e reason the
+    # constraint that light world DM is reachable is on the requirements for
+    # spike cave, not the region, but it more correctly belongs to the region.
+    constraint has(escape) && reachable(light_world_dm_w);
+
+    location spike_cave := has(pearl) && has(hammer) && CanLiftRocks &&
+        (CanExtendMagic2 && has(cape) || has(blue_cane));
+}
+
+region dark_world_dm_e {
+    constraint has(escape) && CanLiftDarkRocks && reachable(light_world_dm_e);
+}
+
+# Dungeons
+
+item crystal_1;
+item crystal_2;
+item crystal_3;
+item crystal_4;
+item crystal_5;
+item crystal_6;
+item crystal_7;
+item pendant_1;
+item pendant_2;
+item pendant_3;
+
+allowed_locations
+    crystal_1 crystal_2 crystal_3 crystal_4 crystal_5 crystal_6 crystal_7
+    pendant_1 pendant_2 pendant_3 :=
+    eastern_palace_prize desert_palace_prize tower_of_hera_prize
+    palace_of_darkness_prize swamp_palace_prize skull_woods_prize
+    thieves_town_prize ice_palace_prize misery_mire_prize turtle_rock_prize;
+
+region hyrule_castle_escape {
+    item escape; allowed_locations escape := zelda;
+    item key_h2;
+    item map_h2;
+    
+    location sanctuary := flag(open) || CanKill5Things && has(key_h2);
+    location sewers_secret_left :=
+        if (flag(open)) {
+            CanLiftRocks || LampIfNeeded && has(key_h2)
+        } else {
+            CanKill5Things && has(key_h2)
+        };
+    location sewers_secret_middle := reachable(sewers_secret_left);
+    location sewers_secret_right := reachable(sewers_secret_left);
+    location sewers_cross :=
+        if (flag(open)) { LampIfNeeded } else { CanKill5Things };
+    location hyrule_castle_boomerang_chest :=
+        if (flag(open)) { has(key_h2) } else { CanKill5Things };
+    location hyrule_castle_map_chest := flag(open) || CanKill5Things;
+    location hyrule_castle_zelda_cell := flag(open) => has(key_h2);
+    location uncle := true;
+    location secret_passage := flag(open) || CanKill5Things;
+    location zelda := reachable(sanctuary);
+}
+
+region eastern_palace {
+    item big_key_p1;
+    item map_p1;
+    item compass_p1;
+
+    location eastern_palace_compass_chest := true;
+    location eastern_palace_big_chest := has(big_key_p1);
+    location eastern_palace_cannonball_chest := true;
+    location eastern_palace_big_key_chest := LampIfNeeded;
+    location eastern_palace_map_chest := true;
+    # V29 has a bunch of checks on this for various ways you can kill Armos
+    # Knights, but they are unnecessary because CanShootArrows is always
+    # required, which satisfies the boss kill requirement.
+    location eastern_palace_armos_knights := CanShootArrows && LampIfNeeded;
+    location eastern_palace_prize := reachable(eastern_palace_armos_knights);
+}
+
+region desert_palace {
+    item big_key_p2;
+    item key_p2;
+    item map_p2;
+    item compass_p2;
+
+    constraint has(escape);
+    constraint has(book) || reachable(dark_world_mire) && has(mirror);
+
+    location desert_palace_big_chest := has(big_key_p2);
+    location desert_palace_big_key_chest := has(key_p2);
+    location desert_palace_compass_chest := has(key_p2);
+    location desert_palace_torch := has(boots);
+    location desert_palace_lanmolas :=
+        CanLiftRocks && CanLightTorches && has(big_key_p2) && has(key_p2) &&
+        (has(sword) || has(hammer) || CanShootArrows || has(boomerang) ||
+         has(red_boomerang) || has(red_cane) || has(blue_cane));
+    location desert_palace_prize := reachable(desert_palace_lanmolas);
+}
+
+region tower_of_hera {
+    item big_key_p3;
+    item key_p3;
+    item map_p3;
+    item compass_p3;
+
+    constraint has(escape) && reachable(light_world_dm_w) && 
+        (has(mirror) || has(hookshot) && has(hammer));
+
+    location tower_of_hera_big_key_chest := CanLightTorches &&
+        (at(key_p3, tower_of_hera_big_key_chest) || has(key_p3));
+    location tower_of_hera_basement_cage := true;
+    location tower_of_hera_map_chest := true;
+    location tower_of_hera_compass_chest := has(big_key_p3);
+    location tower_of_hera_big_chest := has(big_key_p3);
+    location tower_of_hera_moldorm :=
+        has(big_key_p3) && (has(sword) || has(hammer));
+    location tower_of_hera_prize := reachable(tower_of_hera_moldorm);
+}
+
+region hyrule_castle_tower {
+    item key_a1[2];
+    item aga1; allowed_locations aga1 := agahnim;
+
+    constraint has(escape) && CanKill8Things && (has(cape) || HasMasterSword);
+
+    location castle_tower_room_03 := true;
+    location castle_tower_dark_maze := LampIfNeeded && has(key_a1);
+    location agahnim := has(key_a1, 2) && LampIfNeeded && has(sword);
+}
+
+region palace_of_darkness {
+    item big_key_d1;
+    item key_d1[6];
+    item map_d1;
+    item compass_d1;
+
+    constraint has(escape) && has(pearl) && reachable(dark_world_ne);
+
+    PodDarkRoom43 :=
+        LampIfNeeded && if (has(hammer) && CanShootArrows) {
+            has(key_d1, 4)
+        } else {
+            has(key_d1, 3)
+        };
+    PodDarkRoom65 :=
+        LampIfNeeded && if (has(hammer) && CanShootArrows) {
+            has(key_d1, 6)
+        } else {
+            has(key_d1, 5)
+        };
+
+    location palace_of_darkness_shooter_room := true;
+    location palace_of_darkness_big_key_chest :=
+        if (at(key_d1, palace_of_darkness_big_key_chest)) {
+            has(key_d1)
+        } elif (has(hammer) && CanShootArrows && LampIfNeeded) {
+            has(key_d1, 6)
+        } else {
+            has(key_d1, 5)
+        };
+    location palace_of_darkness_arena_ledge := CanShootArrows;
+    location palace_of_darkness_arena_bridge :=
+        has(key_d1) || CanShootArrows && has(hammer);
+    location palace_of_darkness_stalfos_basement :=
+        has(key_d1) || CanShootArrows && has(hammer);
+    location palace_of_darkness_map_chest := CanShootArrows;
+    location palace_of_darkness_big_chest := has(big_key_d1) && PodDarkRoom65;
+    location palace_of_darkness_compass_chest :=
+        if (has(hammer) && CanShootArrows && LampIfNeeded) {
+            has(key_d1, 4)
+        } else {
+            has(key_d1, 3)
+        };
+    location palace_of_darkness_harmless_hellway :=
+        if (at(key_d1, palace_of_darkness_harmless_hellway)) {
+            if (has(hammer) && CanShootArrows && LampIfNeeded) {
+                has(key_d1, 4)
+            } else {
+                has(key_d1, 3)
+            }
+        } elif (has(hammer) && CanShootArrows && LampIfNeeded) {
+            has(key_d1, 6)
+        } else {
+            has(key_d1, 5)
+        };
+    location palace_of_darkness_dark_basement_left := PodDarkRoom43;
+    location palace_of_darkness_dark_basement_right := PodDarkRoom43;
+    location palace_of_darkness_dark_maze_top := PodDarkRoom65;
+    location palace_of_darkness_dark_maze_bottom := PodDarkRoom65;
+    location palace_of_darkness_helmasaur_king :=
+        has(hammer) && LampIfNeeded && CanShootArrows &&
+        has(big_key_d1) && has(key_d1, 6);
+    location palace_of_darkness_prize :=
+        reachable(palace_of_darkness_helmasaur_king);
+}
+
+region swamp_palace {
+    item big_key_d2;
+    item key_d2;
+    item map_d2;
+    item compass_d2;
+
+    constraint has(escape) && has(pearl) && has(mirror) && has(flippers) &&
+        reachable(dark_world_s);
+
+    location swamp_palace_entrance := has(key_d2);
+    location swamp_palace_big_chest :=
+        at(big_key_d2, swamp_palace_big_chest) ||
+        has(key_d2) && has(hammer) && has(big_key_d2);
+    location swamp_palace_big_key_chest := has(key_d2) && has(hammer);
+    location swamp_palace_map_chest := has(key_d2);
+    location swamp_palace_west_chest := has(key_d2) && has(hammer);
+    location swamp_palace_compass_chest := has(key_d2) && has(hammer);
+    location swamp_palace_flooded_room_left :=
+        has(key_d2) && has(hammer) && has(hookshot);
+    location swamp_palace_flooded_room_right :=
+        has(key_d2) && has(hammer) && has(hookshot);
+    location swamp_palace_waterfall_room :=
+        has(key_d2) && has(hammer) && has(hookshot);
+    location swamp_palace_arrghus :=
+        has(key_d2) && has(hammer) && has(hookshot);
+    location swamp_palace_prize := reachable(swamp_palace_arrghus);
+}
+
+region skull_woods {
+    item big_key_d3;
+    item key_d3[3];
+    item map_d3;
+    item compass_d3;
+
+    constraint has(escape) && has(pearl) && reachable(dark_world_nw);
+
+    location skull_woods_big_chest :=
+        at(big_key_d3, skull_woods_big_chest) || has(big_key_d3);
+    location skull_woods_big_key_chest := true;
+    location skull_woods_compass_chest := true;
+    location skull_woods_map_chest := true;
+    location skull_woods_bridge_room := has(fire_rod);
+    location skull_woods_pot_prison := true;
+    location skull_woods_pinball_room := true;
+    location skull_woods_mothula :=
+        has(fire_rod) && has(sword) && has(key_d3, 3);
+    location skull_woods_prize := reachable(skull_woods_mothula);
+}
+
+constraint at(key_d3, skull_woods_pinball_room);
+
+region thieves_town {
+    item big_key_d4;
+    item key_d4;
+    item map_d4;
+    item compass_d4;
+
+    constraint has(escape) && has(pearl) && reachable(dark_world_nw);
+
+    location thieves_town_attic := has(key_d4) && has(big_key_d4);
+    location thieves_town_big_key_chest := true;
+    location thieves_town_map_chest := true;
+    location thieves_town_compass_chest := true;
+    location thieves_town_ambush_chest := true;
+    location thieves_town_big_chest :=
+        has(hammer) && has(big_big_key4) &&
+        (at(key_d4, thieves_town_big_chest) || has(key_d4));
+    location thieves_town_blinds_cell := has(big_key_d4);
+    location thieves_town_blind :=
+        has(key_d4) && has(big_key_d4) &&
+        (has(sword) || has(hammer) || has(blue_cane) || has(red_cane));
+    location thieves_town_prize := reachable(thieves_town_blind);
+}
+
+region ice_palace {
+    item big_key_d5;
+    item key_d5[2];
+    item map_d5;
+    item compass_d5;
+
+    constraint has(escape) && has(pearl) && has(flippers) &&
+        CanLiftDarkRocks && CanMeltThings;
+
+    # TODO
+    location ice_palace_big_key_chest := true;
+    location ice_palace_compass_chest := true;
+    location ice_palace_map_chest := true;
+    location ice_palace_spike_room := true;
+    location ice_palace_freezor_room := true;
+    location ice_palace_iced_t_room := true;
+    location ice_palace_big_chest := true;
+    location ice_palace_kholdstare := true;
+    location ice_palace_prize := true;
+}
+
+region misery_mire {
+    item big_key_d6;
+    item key_d6[3];
+    item map_d6;
+    item compass_d6;
+    # TODO
+}
+
+region turtle_rock {
+    item big_key_d7;
+    item key_d7[4];
+    item map_d7;
+    item compass_d7;
+    # TODO
+}
+
+region ganons_tower {
+    item big_key_a2;
+    item key_a2[4];
+    item map_a2;
+    item compass_a2;
+    # TODO
+}
+
