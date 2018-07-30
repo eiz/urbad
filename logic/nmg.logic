@@ -71,6 +71,14 @@ flag open false;
 flag require_lamp true;
 flag allow_fake_flippers false;
 
+# Exactly one of these must be set per dungeon.
+flag misery_mire_requires_bombos false;
+flag misery_mire_requires_ether false;
+flag misery_mire_requires_quake false;
+flag turtle_rock_requires_bombos false;
+flag turtle_rock_requires_ether false;
+flag turtle_rock_requires_quake false;
+
 # Basic character capabilities.
 
 CanLiftRocks := has(gloves);
@@ -297,7 +305,7 @@ region hyrule_castle_escape {
     item escape; allowed_locations escape := zelda;
     item key_h2;
     item map_h2;
-    
+
     location sanctuary := flag(open) || CanKill5Things && has(key_h2);
     location sewers_secret_left :=
         if (flag(open)) {
@@ -361,7 +369,7 @@ region tower_of_hera {
     item map_p3;
     item compass_p3;
 
-    constraint has(escape) && reachable(light_world_dm_w) && 
+    constraint has(escape) && reachable(light_world_dm_w) &&
         (has(mirror) || has(hookshot) && has(hammer));
 
     location tower_of_hera_big_key_chest := CanLightTorches &&
@@ -535,16 +543,22 @@ region ice_palace {
     constraint has(escape) && has(pearl) && has(flippers) &&
         CanLiftDarkRocks && CanMeltThings;
 
-    # TODO
-    location ice_palace_big_key_chest := true;
+    location ice_palace_big_key_chest :=
+        has(hammer) && CanLiftRocks && (has(hookshot) ||
+            if (has(big_key_d5)) { has(hookshot) } else { has(key_d5) });
     location ice_palace_compass_chest := true;
-    location ice_palace_map_chest := true;
-    location ice_palace_spike_room := true;
-    location ice_palace_freezor_room := true;
+    location ice_palace_map_chest :=
+        has(hammer) && CanLiftRocks && (has(hookshot) ||
+            if (has(big_key_d5)) { has(hookshot) } else { has(key_d5) });
+    location ice_palace_spike_room := has(hookshot) ||
+        if (has(big_key_d5)) { has(hookshot) } else { has(key_d5) };
+    location ice_palace_freezor_room := CanMeltThings;
     location ice_palace_iced_t_room := true;
-    location ice_palace_big_chest := true;
-    location ice_palace_kholdstare := true;
-    location ice_palace_prize := true;
+    location ice_palace_big_chest := has(big_key_d5);
+    location ice_palace_kholdstare :=
+        has(hammer) && CanMeltThings && CanLiftRocks && has(big_key_d5) &&
+        (has(big_key_d5) && has(red_cane) || has(key_d5, 2));
+    location ice_palace_prize := reachable(ice_palace_kholdstare);
 }
 
 region misery_mire {
@@ -552,7 +566,27 @@ region misery_mire {
     item key_d6[3];
     item map_d6;
     item compass_d6;
-    # TODO
+
+    constraint has(escape) && has(pearl) && reachable(dark_world_mire) &&
+        (has(boots) || has(hookshot)) && CanKill8Things &&
+        (misery_mire_requires_bombos => has(bombos)) &&
+        (misery_mire_requires_ether => has(ether)) &&
+        (misery_mire_requires_quake => has(quake));
+
+    location misery_mire_big_chest := has(big_key_d6);
+    location misery_mire_main_lobby := has(key_d6) || has(big_key_d6);
+    location misery_mire_big_key_chest := CanLightTorches &&
+        (at(big_key_d6, misery_mire_compass_chest) && has(key_d6, 2) ||
+         has(key_d6, 3));
+    location misery_mire_compass_chest := CanLightTorches &&
+        (at(big_key_d6, misery_mire_compass_chest) && has(key_d6, 2) ||
+         has(key_d6, 3));
+    location misery_mire_bridge_chest := true;
+    location misery_mire_map_chest := true;
+    location misery_mire_spike_chest := true;
+    location misery_mire_vitreous := has(red_cane) && LampIfNeeded &&
+        has(big_key_d6) && (has(hammer) || has(sword) || CanShootArrows);
+    location misery_mire_prize := reachable(misery_mire_vitreous);
 }
 
 region turtle_rock {
@@ -560,7 +594,26 @@ region turtle_rock {
     item key_d7[4];
     item map_d7;
     item compass_d7;
-    # TODO
+
+    constraint has(escape) && has(pearl) && has(red_cane) && CanLiftDarkRocks &&
+        has(hammer) &&
+        (turtle_rock_requires_bombos => has(bombos)) &&
+        (turtle_rock_requires_ether => has(ether)) &&
+        (turtle_rock_requires_quake => has(quake));
+
+    location turtle_rock_chain_chomps := true;
+    location turtle_rock_compass_chest := true;
+    location turtle_rock_roller_room_left := true;
+    location turtle_rock_roller_room_right := true;
+    location turtle_rock_big_chest := true;
+    location turtle_rock_big_key_chest := true;
+    location turtle_rock_crystaroller_room := true;
+    location turtle_rock_eye_bridge_bottom_left := true;
+    location turtle_rock_eye_bridge_bottom_right := true;
+    location turtle_rock_eye_bridge_top_left := true;
+    location turtle_rock_eye_bridge_top_right := true;
+    location turtle_rock_trinexx := true;
+    location turtle_rock_prize := reachable(turtle_rock_trinexx);
 }
 
 region ganons_tower {
