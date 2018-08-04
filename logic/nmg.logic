@@ -61,9 +61,6 @@ item fifty_rupees[7];
 item one_hundred_rupees;
 item three_hundred_rupees[5];
 
-## Token items
-item aga2;
-
 # Flags
 # Only the ones I find interesting were included. Feel free.
 
@@ -279,6 +276,14 @@ region dark_world_dm_w {
 
 region dark_world_dm_e {
     constraint has(escape) && CanLiftDarkRocks && reachable(light_world_dm_e);
+
+    location superbunny_cave_top := has(pearl);
+    location superbunny_cave_bottom := has(pearl);
+    location hookshot_cave_top_right := has(pearl) && has(hookshot);
+    location hookshot_cave_top_left := has(pearl) && has(hookshot);
+    location hookshot_cave_bottom_left := has(pearl) && has(hookshot);
+    location hookshot_cave_bottom_right :=
+        has(pearl) && (has(hookshot) || has(boots));
 }
 
 # Dungeons
@@ -601,18 +606,36 @@ region turtle_rock {
         (turtle_rock_requires_ether => has(ether)) &&
         (turtle_rock_requires_quake => has(quake));
 
-    location turtle_rock_chain_chomps := true;
+    # There are a bunch of rules in the V29 logic here that consider whether you
+    # might not have the Cane of Somaria. I'm not sure why, but it's irrelevant
+    # here as the cane is always required to access the region.
+    location turtle_rock_chain_chomps := has(key_d7);
     location turtle_rock_compass_chest := true;
-    location turtle_rock_roller_room_left := true;
-    location turtle_rock_roller_room_right := true;
-    location turtle_rock_big_chest := true;
-    location turtle_rock_big_key_chest := true;
-    location turtle_rock_crystaroller_room := true;
-    location turtle_rock_eye_bridge_bottom_left := true;
-    location turtle_rock_eye_bridge_bottom_right := true;
-    location turtle_rock_eye_bridge_top_left := true;
-    location turtle_rock_eye_bridge_top_right := true;
-    location turtle_rock_trinexx := true;
+    location turtle_rock_roller_room_left := has(fire_rod);
+    location turtle_rock_roller_room_right := has(fire_rod);
+    location turtle_rock_big_chest := has(big_key_d7) && has(key_d7, 2);
+    # The setAlwaysAllow on this key doesn't directly make sense in this
+    # implementation. I'm actually slightly unsure whether it makes sense in V29
+    # as the requirements seem to subsume the always-allow condition entirely.
+    location turtle_rock_big_key_chest := has(key_d7, 2);
+    location turtle_rock_crystaroller_room := has(big_key_d7) && has(key_d7, 2);
+    location turtle_rock_eye_bridge_bottom_left :=
+        LampIfNeeded && has(big_key_d7) && has(key_d7, 3) &&
+        (has(cape) || has(blue_cane) || CanBlockLasers);
+    location turtle_rock_eye_bridge_bottom_right :=
+        LampIfNeeded && has(big_key_d7) && has(key_d7, 3) &&
+        (has(cape) || has(blue_cane) || CanBlockLasers);
+    location turtle_rock_eye_bridge_top_left :=
+        LampIfNeeded && has(big_key_d7) && has(key_d7, 3) &&
+        (has(cape) || has(blue_cane) || CanBlockLasers);
+    location turtle_rock_eye_bridge_top_right :=
+        LampIfNeeded && has(big_key_d7) && has(key_d7, 3) &&
+        (has(cape) || has(blue_cane) || CanBlockLasers);
+    location turtle_rock_trinexx :=
+        has(key_d7, 4) && LampIfNeeded && has(big_key_d7) &&
+        has(fire_rod) && has(ice_rod) &&
+        (has(sword, 3) || has(hammer) || CanExtendMagic2 && HasMasterSword ||
+         CanExtendMagic4 && has(sword));
     location turtle_rock_prize := reachable(turtle_rock_trinexx);
 }
 
@@ -621,6 +644,118 @@ region ganons_tower {
     item key_a2[4];
     item map_a2;
     item compass_a2;
-    # TODO
-}
+    item aga2; allowed_locations aga2 := ganons_tower_agahnim_2;
 
+    constraint has(escape) && has(pearl) && HasAllCrystals &&
+        reachable(dark_world_dm_e);
+
+    GTBigKeyInRandomizerRoom :=
+        at(big_key_a2, ganons_tower_randomizer_room_top_left) ||
+        at(big_key_a2, ganons_tower_randomizer_room_top_right) ||
+        at(big_key_a2, ganons_tower_randomizer_room_bottom_left) ||
+        at(big_key_a2, ganons_tower_randomizer_room_bottom_right);
+    GTMapChestHasKey := at(big_key_a2, ganons_tower_map_chest) ||
+        at(key_a2, ganons_tower_map_chest);
+    GTCanBeatIceArmos :=
+        has(sword) || has(hammer) || CanShootArrows || has(boomerang) ||
+        has(red_boomerang) ||
+        CanExtendMagic4 && (has(fire_rod) || has(ice_rod)) ||
+        CanExtendMagic2 && (has(red_cane) || has(blue_cane));
+    GTCanBeatLanmolas :=
+        has(sword) || has(hammer) || has(fire_rod) || has(ice_rod) ||
+        has(red_cane) || has(blue_cane);
+    GTCanBeatMoldorm := has(sword) || has(hammer);
+    GTCanBeatAgahnim2 := has(sword) || has(hammer) || has(net);
+    GTReachIceArmosPrize :=
+        (has(hammer) && has(hookshot) || has(red_cane) && has(fire_rod)) &&
+        has(key_a2, 3) && GTCanBeatIceArmos;
+
+    location ganons_tower_bobs_torch := has(boots);
+    location ganons_tower_dms_room_top_left := has(hammer) && has(hookshot);
+    location ganons_tower_dms_room_top_right := has(hammer) && has(hookshot);
+    location ganons_tower_dms_room_bottom_left := has(hammer) && has(hookshot);
+    location ganons_tower_dms_room_bottom_right := has(hammer) && has(hookshot);
+    location ganons_tower_randomizer_room_top_left :=
+        has(hammer) && has(hookshot) &&
+        (((at(big_key_a2, ganons_tower_randomizer_room_top_right) ||
+           at(big_key_a2, ganons_tower_randomizer_room_bottom_left) ||
+           at(big_key_a2, ganons_tower_randomizer_room_bottom_right)) &&
+         has(key_a2, 3)) || has(key_a2, 4));
+    location ganons_tower_randomizer_room_top_right :=
+        has(hammer) && has(hookshot) &&
+        (((at(big_key_a2, ganons_tower_randomizer_room_top_left) ||
+           at(big_key_a2, ganons_tower_randomizer_room_bottom_left) ||
+           at(big_key_a2, ganons_tower_randomizer_room_bottom_right)) &&
+         has(key_a2, 3)) || has(key_a2, 4));
+    location ganons_tower_randomizer_room_bottom_left :=
+        has(hammer) && has(hookshot) &&
+        (((at(big_key_a2, ganons_tower_randomizer_room_bottom_right) ||
+           at(big_key_a2, ganons_tower_randomizer_room_top_left) ||
+           at(big_key_a2, ganons_tower_randomizer_room_top_right)) &&
+         has(key_a2, 3)) || has(key_a2, 4));
+    location ganons_tower_randomizer_room_bottom_right :=
+        has(hammer) && has(hookshot) &&
+        (((at(big_key_a2, ganons_tower_randomizer_room_bottom_left) ||
+           at(big_key_a2, ganons_tower_randomizer_room_top_left) ||
+           at(big_key_a2, ganons_tower_randomizer_room_top_right)) &&
+         has(key_a2, 3)) || has(key_a2, 4));
+    location ganons_tower_firesnake_room :=
+        has(hammer) && has(hookshot) &&
+        (((GTBigKeyInRandomizerRoom ||
+          at(key_a2, ganons_tower_firesnake_room)) && has(key_a2, 2)) ||
+         has(key_a2, 3));
+    location ganons_tower_map_chest :=
+        at(key_a2, ganons_tower_map_chest) && has(key_a2, 3) ||
+        has(hammer) && (has(boots) || has(hookshot)) &&
+        if (GTMapChestHasKey) { has(key_a2, 3) } else { has(key_a2, 4) };
+    location ganons_tower_big_chest :=
+        has(big_key_a2) && has(key_a2, 3) &&
+        (has(hammer) && has(hookshot) || has(red_cane) && has(fire_rod));
+    location ganons_tower_hope_room_left := true;
+    location ganons_tower_hope_room_right := true;
+    location ganons_tower_bobs_chest := has(key_a2, 3) &&
+        (has(hammer) && has(hookshot) || has(red_cane) && has(fire_rod));
+    location ganons_tower_tile_room := has(red_cane);
+    location ganons_tower_compass_room_top_left :=
+        has(red_cane) && has(fire_rod) &&
+        (((at(big_key_a2, ganons_tower_compass_room_top_right) ||
+           at(big_key_a2, ganons_tower_compass_room_bottom_left) ||
+           at(big_key_a2, ganons_tower_compass_room_bottom_right)) &&
+         has(key_a2, 3)) || has(key_a2, 4));
+    location ganons_tower_compass_room_top_right :=
+        has(red_cane) && has(fire_rod) &&
+        (((at(big_key_a2, ganons_tower_compass_room_top_left) ||
+           at(big_key_a2, ganons_tower_compass_room_bottom_left) ||
+           at(big_key_a2, ganons_tower_compass_room_bottom_right)) &&
+         has(key_a2, 3)) || has(key_a2, 4));
+    location ganons_tower_compass_room_bottom_left :=
+        has(red_cane) && has(fire_rod) &&
+        (((at(big_key_a2, ganons_tower_compass_room_bottom_right) ||
+           at(big_key_a2, ganons_tower_compass_room_top_left) ||
+           at(big_key_a2, ganons_tower_compass_room_top_right)) &&
+         has(key_a2, 3)) || has(key_a2, 4));
+    location ganons_tower_compass_room_bottom_right :=
+        has(red_cane) && has(fire_rod) &&
+        (((at(big_key_a2, ganons_tower_compass_room_bottom_left) ||
+           at(big_key_a2, ganons_tower_compass_room_top_left) ||
+           at(big_key_a2, ganons_tower_compass_room_top_right)) &&
+         has(key_a2, 3)) || has(key_a2, 4));
+    location ganons_tower_big_key_chest := GTReachIceArmosPrize;
+    location ganons_tower_big_key_room_left := GTReachIceArmosPrize;
+    location ganons_tower_big_key_room_right := GTReachIceArmosPrize;
+    location ganons_tower_mini_helmasaur_room_left :=
+        CanShootArrows && CanLightTorches && has(big_key_a2) &&
+        has(key_a2, 3) && GTCanBeatLanmolas;
+    location ganons_tower_mini_helmasaur_room_right :=
+        CanShootArrows && CanLightTorches && has(big_key_a2) &&
+        has(key_a2, 3) && GTCanBeatLanmolas;
+    location ganons_tower_pre_moldorm_chest :=
+        CanShootArrows && CanLightTorches && has(big_key_a2) &&
+        has(key_a2, 3) && GTCanBeatLanmolas;
+    location ganons_tower_moldorm_chest :=
+        CanShootArrows && CanLightTorches && has(big_key_a2) &&
+        has(key_a2, 3) && GTCanBeatLanmolas && GTCanBeatMoldorm &&
+        has(hookshot);
+    location ganons_tower_agahnim_2 :=
+        reachable(ganons_tower_moldorm_chest) && GTCanBeatAgahnim2;
+}
