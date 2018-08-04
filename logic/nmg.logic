@@ -530,9 +530,12 @@ region thieves_town {
     location thieves_town_compass_chest := true;
     location thieves_town_ambush_chest := true;
     location thieves_town_big_chest :=
-        has(hammer) && has(big_big_key4) &&
+        has(hammer) && has(big_key_d4) &&
         (at(key_d4, thieves_town_big_chest) || has(key_d4));
     location thieves_town_blinds_cell := has(big_key_d4);
+    # TODO: can the key_d4 requirement be eliminated here? V29 has special logic
+    # to allow it to be considered collectable if it's in the big chest even
+    # though that's not possible.
     location thieves_town_blind :=
         has(key_d4) && has(big_key_d4) &&
         (has(sword) || has(hammer) || has(blue_cane) || has(red_cane));
@@ -705,7 +708,6 @@ region ganons_tower {
           at(key_a2, ganons_tower_firesnake_room)) && has(key_a2, 2)) ||
          has(key_a2, 3));
     location ganons_tower_map_chest :=
-        at(key_a2, ganons_tower_map_chest) && has(key_a2, 3) ||
         has(hammer) && (has(boots) || has(hookshot)) &&
         if (GTMapChestHasKey) { has(key_a2, 3) } else { has(key_a2, 4) };
     location ganons_tower_big_chest :=
